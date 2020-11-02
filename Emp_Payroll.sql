@@ -10,9 +10,9 @@ select database();
 create table employee_payroll
      (
      id              INT unsigned NOT NULL AUTO_INCREMENT,
-     Name            VARCHAR(150) NOT NULL,
-     Salary          Double NOT NULL,
-     Start           DATE NOT NULL,
+     name            VARCHAR(150) NOT NULL,
+     salary          Double NOT NULL,
+     start           DATE NOT NULL,
      PRIMARY KEY     (id)
      );  
 describe employee_payroll;
@@ -20,9 +20,9 @@ describe employee_payroll;
 //UC3 & 4
 
 insert into employee_payroll (name, salary, start) VALUES
-    -> ('Bill', 109089.00, '2018-08-04'),
-    -> ('Terisa', 887682.00, '2017-05-06'),
-    -> ('Charlie', 8667388.00, '2020-05-06');
+    -> ('Bill', 1000000.00, '2018-08-04'),
+    -> ('Terisa', 2000000.00, '2017-05-06'),
+    -> ('Charlie', 30000000.00, '2020-05-06');
 select*from employee_payroll;
 
 //UC5
@@ -38,11 +38,11 @@ alter table employee_payroll
 describe employee_payroll;
 update employee_payroll
     -> set gender = 'F'
-    -> where name = 'Isha' or name = 'Leena'
+    -> where name = 'Terisa'
 select *  from employee_payroll;
 update employee_payroll
     -> set gender = 'M'
-    -> where name = 'Tushar'
+    -> where name = 'Bill', or 'Charlie';
 select *  from employee_payroll;
 
 //UC7
@@ -72,6 +72,24 @@ alter table employee_payroll_service add net_pay double NOT NULL after tax;
 
 //UC10
 
-update employee_payroll_service set department = 'Sales' where name = 'Shivangi"
+update employee_payroll_service set department = 'Sales' where name = 'Terisa'
 insert into employee_payroll_service(name,department, gender, basic_pay, deductions, taxable_pay, tax, net_pay, start) 
-       ->values ('Shivangi','Marketing','F',3000000,1000000,2000000,500000,1500000,'2018-12-11');
+       ->values ('Terisa','Marketing','F',3000000,1000000,2000000,500000,1500000,'2018-12-11');
+
+
+//UC12
+
+alter table employee_payroll_service rename to employee;
+alter table employee rename column id to employeeId;
+alter table employee add payroll_id int not null after gender;
+create table department (employeeId int not null, departmentName varchar(100) not null,
+                         foreign key (employeeId) references employee(employeeId));
+create table payroll ( payroll_id int not null, basic_pay double not null, deductions double not null,
+                      taxable_pay double not null, tax double not null, net_pay double not null, primary key (payroll_id));
+
+alter table employee add foreign key(payroll_id) payroll(payroll_id);
+create table phone_numbers (employeeId int not null, phone numeric(10) not null,
+                            foreign key (employeeId) references employee(employeeId));
+alter table employee drop column basic_pay, drop column deductions, drop column taxable_pay, drop column tax, drop column net_pay;
+
+
